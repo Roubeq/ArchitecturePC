@@ -1,1 +1,1 @@
-print("I'am not Learn git")
+print("git is ez")
