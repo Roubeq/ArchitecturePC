@@ -1,0 +1,92 @@
+2. SELECT firstname,lastname,YEAR(birthdate) AS year_of_birth FROM employee
+3. UPDATE employee SET lastname = 'Fox' WHERE firstname = 'Jennifer';
+4. SELECT employee.firstname, employee.lastname, position.title_of_position FROM employee
+JOIN position ON position.id_position = employee.id_position
+ORDER BY employee.firstname ASC;
+5. SELECT CONCAT(firstname, ' ', lastname) AS name
+FROM employee;
+6. SELECT employee.firstname, employee.lastname, position.title_of_position FROM employee
+JOIN position ON employee.id_position = position.id_position
+WHERE position.department = 'Finance Department';
+7. SELECT employee.firstname, employee.lastname, position.department, position.title_of_position FROM employee
+JOIN position ON employee.id_position = position.id_position
+WHERE NOT position.department = 'Warehouse' AND NOT position.department = 'Finance Department'
+8. SELECT * FROM employee
+WHERE address LIKE '%Jersey City%';
+9. DELETE FROM employee 
+WHERE firstname = 'Kevin' AND lastname = 'Moore';
+10. SELECT MONTH(birthdate) AS month, COUNT(*) AS count
+FROM employee
+GROUP BY month
+ORDER BY month ASC;
+11. SELECT 
+    CONCAT(e.firstname, ' ', e.lastname) AS employee,
+    CONCAT(m.firstname, ' ', m.lastname) AS head
+FROM employee AS e
+LEFT JOIN position AS p ON e.id_position = p.id_position
+LEFT JOIN employee AS m ON p.submission = m.id_position
+ORDER BY employee;
+12. SELECT COUNT(*) AS count
+FROM employee
+WHERE MONTH(birthdate) = MONTH(CURRENT_DATE);
+13. INSERT INTO position (title_of_position, department, submission)
+VALUES (
+    'auditor',
+    'Accounting Department',
+    (SELECT id_position FROM position AS p WHERE p.title_of_position = 'Chief Accounting Officer')
+);
+14. SELECT * FROM employee
+WHERE phone IS NULL OR address IS NULL;
+15. SELECT firstname, lastname, birthdate
+FROM employee
+WHERE birthdate = (SELECT MIN(birthdate) FROM employee)
+   OR birthdate = (SELECT MAX(birthdate) FROM employee);
+16. SELECT e.firstname, e.lastname
+FROM employee AS e
+JOIN position AS p ON e.id_position = p.id_position
+WHERE p.submission = (SELECT id_position FROM position WHERE title_of_position = 'Chief Commercial Officer');
+17. SELECT firstname, lastname, birthdate
+FROM employee
+ORDER BY birthdate DESC
+LIMIT 5;
+18. SELECT 
+    r.id_room as room, 
+    r.stage, 
+    SUM(DATEDIFF(
+        LEAST(a.departure_date, '2024-03-31'), 
+        GREATEST(a.arrival_date, '2024-01-01')
+    )) AS days
+FROM rooms r
+LEFT JOIN accomodation a 
+    ON r.id_room = a.id_room
+    AND a.departure_date >= '2024-01-01' 
+    AND a.arrival_date <= '2024-03-31'
+GROUP BY r.id_room, r.stage
+ORDER BY days DESC;
+19. SELECT 
+    SUM(DATEDIFF(
+        LEAST(a.departure_date, '2024-02-29'), 
+        GREATEST(a.arrival_date, '2024-02-01')
+    ) * r.cost) AS revenue
+FROM accomodation a
+JOIN rooms r ON a.id_room = r.id_room
+WHERE a.id_room = 12
+AND a.departure_date >= '2024-02-01'
+AND a.arrival_date <= '2024-02-29';
+20. SELECT
+    id_room AS room,
+    firstname,
+    lastname
+FROM accomodation
+WHERE '2024-01-01' BETWEEN arrival_date AND departure_date;
+21. SELECT 
+	a.id_room AS room,
+	a.firstname,
+	a.lastname,
+	DATEDIFF(a.departure_date,a.arrival_date) AS days,
+	DATEDIFF(a.departure_date,a.arrival_date) * b.cost AS revenue,
+	b.category
+FROM accomodation AS a
+JOIN rooms b ON a.id_room = b.id_room
+ORDER BY days DESC
+LIMIT 1;
